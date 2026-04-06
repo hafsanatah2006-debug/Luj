@@ -1,0 +1,1717 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Up - Traditional Bangladeshi Fashion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #fdf6ee;
+            --fg: #2d1810;
+            --muted: #8a7060;
+            --accent: #c0392b;
+            --accent2: #d4a017;
+            --card: #fff8f0;
+            --border: #e8d5c4;
+            --green: #1a6b3c;
+            --teal: #0d7377;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Hind Siliguri', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(192,57,43,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(212,160,23,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(26,107,60,0.06) 0%, transparent 50%);
+        }
+
+        .bg-dots {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+            background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .floating-shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.08;
+            animation: floatShape 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 300px; height: 300px;
+            background: var(--accent);
+            top: -100px; left: -50px;
+            animation-delay: 0s;
+        }
+        .floating-shape:nth-child(2) {
+            width: 200px; height: 200px;
+            background: var(--accent2);
+            bottom: -50px; right: -30px;
+            animation-delay: -7s;
+        }
+        .floating-shape:nth-child(3) {
+            width: 150px; height: 150px;
+            background: var(--green);
+            top: 50%; right: 10%;
+            animation-delay: -14s;
+        }
+
+        @keyframes floatShape {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -20px) scale(1.1); }
+            50% { transform: translate(-20px, 30px) scale(0.95); }
+            75% { transform: translate(15px, 15px) scale(1.05); }
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px 16px 10px;
+        }
+
+        header h1 {
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(192,57,43,0.15);
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 16px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .game-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 24px;
+                padding: 20px 24px 40px;
+            }
+        }
+
+        /* Character Display */
+        .character-panel {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(45,24,16,0.08), 0 2px 8px rgba(45,24,16,0.04);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .character-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,248,240,0.5) 0%, rgba(232,213,196,0.2) 100%);
+            pointer-events: none;
+        }
+
+        .character-stage {
+            position: relative;
+            width: 320px;
+            height: 520px;
+        }
+
+        @media (max-width: 400px) {
+            .character-stage {
+                width: 280px;
+                height: 460px;
+            }
+        }
+
+        #characterCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .outfit-name {
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            min-height: 28px;
+        }
+
+        /* Wardrobe Panel */
+        .wardrobe-panel {
+            flex: 1;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .cat-tab {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Hind Siliguri', sans-serif;
+            user-select: none;
+        }
+
+        .cat-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .cat-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 14px rgba(192,57,43,0.3);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .item-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .item-card:hover::after {
+            left: 100%;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent2);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(212,160,23,0.15);
+        }
+
+        .item-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #fff5f5, #fff0e8);
+            box-shadow: 0 4px 16px rgba(192,57,43,0.2);
+        }
+
+        .item-card.selected::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 6px; right: 6px;
+            background: var(--accent);
+            color: white;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-preview {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 6px;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .item-name {
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--fg);
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-random {
+            background: linear-gradient(135deg, var(--accent2), #e8b820);
+            color: white;
+            box-shadow: 0 4px 14px rgba(212,160,23,0.3);
+        }
+
+        .btn-random:hover {
+            box-shadow: 0 6px 20px rgba(212,160,23,0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #6c757d, #8a9299);
+            color: white;
+            box-shadow: 0 4px 14px rgba(108,117,125,0.2);
+        }
+
+        .btn-screenshot {
+            background: linear-gradient(135deg, var(--green), #228b4a);
+            color: white;
+            box-shadow: 0 4px 14px rgba(26,107,60,0.3);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--fg);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Sparkle effect */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes sparkleAnim {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .floating-shape, .sparkle {
+                animation: none !important;
+            }
+            .item-card, .cat-tab, .action-btn {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+<div class="bg-dots"></div>
+<div class="floating-shape"></div>
+<div class="floating-shape"></div>
+<div class="floating-shape"></div>
+
+<header>
+    <h1>লুজাইনার ঢংো স্টুডিও</h1>
+    <p>Traditional Bangladeshi Dress Up Game</p>
+</header>
+
+<div class="game-container">
+    <!-- Character Display -->
+    <div class="character-panel">
+        <div class="character-stage">
+            <canvas id="characterCanvas" width="640" height="1040"></canvas>
+        </div>
+        <div class="outfit-name" id="outfitName">শাড়ি - লাল</div>
+    </div>
+
+    <!-- Wardrobe -->
+    <div class="wardrobe-panel">
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="items-grid" id="itemsGrid"></div>
+        <div class="actions">
+            <button class="action-btn btn-random" onclick="randomOutfit()">
+                <i class="fas fa-dice"></i> Random
+            </button>
+            <button class="action-btn btn-reset" onclick="resetOutfit()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+            <button class="action-btn btn-screenshot" onclick="takeScreenshot()">
+                <i class="fas fa-camera"></i> Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// Game Data - Outfit items organized by category
+// ============================================
+const categories = [
+    { id: 'sari', name: 'শাড়ি', nameEn: 'Sari', icon: 'fa-wind' },
+    { id: 'salwar', name: 'সেলোয়ার কামিজ', nameEn: 'Salwar Kameez', icon: 'fa-vest' },
+    { id: 'hair', name: 'চুল', nameEn: 'Hair', icon: 'fa-hat-wizard' },
+    { id: 'accessory', name: 'আনুষঙ্গিক', nameEn: 'Accessories', icon: 'fa-gem' },
+    { id: 'background', name: 'পটভূমি', nameEn: 'Background', icon: 'fa-image' }
+];
+
+const items = {
+    sari: [
+        { id: 'sari-red', name: 'লাল শাড়ি', nameEn: 'Red Sari', colors: { body: '#c0392b', border: '#d4a017', pallu: '#a93226', blouse: '#8b1a1a' } },
+        { id: 'sari-green', name: 'সবুজ শাড়ি', nameEn: 'Green Sari', colors: { body: '#1a6b3c', border: '#d4a017', pallu: '#145530', blouse: '#0d3d22' } },
+        { id: 'sari-blue', name: 'নীল শাড়ি', nameEn: 'Blue Sari', colors: { body: '#0d7377', border: '#c0a060', pallu: '#095555', blouse: '#063d3d' } },
+        { id: 'sari-pink', name: 'গোলাপি শাড়ি', nameEn: 'Pink Sari', colors: { body: '#d4568a', border: '#d4a017', pallu: '#b83d70', blouse: '#8b1a40' } },
+        { id: 'sari-purple', name: 'বেগুনি শাড়ি', nameEn: 'Purple Sari', colors: { body: '#7b2d8e', border: '#e8c84a', pallu: '#5e1d6e', blouse: '#3d0f4a' } },
+        { id: 'sari-orange', name: 'কমলা শাড়ি', nameEn: 'Orange Sari', colors: { body: '#d35400', border: '#f5d76e', pallu: '#a84300', blouse: '#7a3000' } },
+        { id: 'sari-white', name: 'সাদা শাড়ি', nameEn: 'White Jamdani', colors: { body: '#f5f0e8', border: '#d4a017', pallu: '#e8dcc8', blouse: '#c0b090' } },
+        { id: 'sari-gold', name: 'স্বর্ণ শাড়ি', nameEn: 'Golden Sari', colors: { body: '#c9a030', border: '#8b6914', pallu: '#b08820', blouse: '#6b4c0a' } },
+    ],
+    salwar: [
+        { id: 'salwar-white', name: 'সাদা সেলোয়ার', nameEn: 'White Salwar', colors: { kameez: '#f0ece4', salwar: '#e0d8cc', dupatta: '#f5f0e8', trim: '#d4a017' } },
+        { id: 'salwar-pink', name: 'গোলাপি সেলোয়ার', nameEn: 'Pink Salwar', colors: { kameez: '#e8869a', salwar: '#d06880', dupatta: '#f0a0b4', trim: '#d4a017' } },
+        { id: 'salwar-blue', name: 'নীল সেলোয়ার', nameEn: 'Blue Salwar', colors: { kameez: '#5ba4b5', salwar: '#3d8899', dupatta: '#7cc0d0', trim: '#c0a060' } },
+        { id: 'salwar-green', name: 'সবুজ সেলোয়ার', nameEn: 'Green Salwar', colors: { kameez: '#4a9e5a', salwar: '#2d7a3d', dupatta: '#70c080', trim: '#d4a017' } },
+        { id: 'salwar-yellow', name: 'হলুদ সেলোয়ার', nameEn: 'Yellow Salwar', colors: { kameez: '#e0c040', salwar: '#c8a828', dupatta: '#f0d860', trim: '#c0392b' } },
+        { id: 'salwar-maroon', name: 'মেরুন সেলোয়ার', nameEn: 'Maroon Salwar', colors: { kameez: '#8b2252', salwar: '#6b1242', dupatta: '#a84070', trim: '#d4a017' } },
+    ],
+    hair: [
+        { id: 'hair-short', name: 'ছোট চুল', nameEn: 'Short Hair', style: 'short' },
+        { id: 'hair-medium', name: 'মাঝারি চুল', nameEn: 'Medium Hair', style: 'medium' },
+        { id: 'hair-long', name: 'লম্বা চুল', nameEn: 'Long Hair', style: 'long' },
+        { id: 'hair-bun', name: 'বিনুনি', nameEn: 'Bun', style: 'bun' },
+    ],
+    accessory: [
+        { id: 'acc-none', name: 'কিছুই না', nameEn: 'None', type: 'none' },
+        { id: 'acc-tikka', name: 'টিকা', nameEn: 'Tikka', type: 'tikka' },
+        { id: 'acc-earrings-gold', name: 'সোনার দুল', nameEn: 'Gold Earrings', type: 'earrings-gold' },
+        { id: 'acc-earrings-red', name: 'লাল দুল', nameEn: 'Red Earrings', type: 'earrings-red' },
+        { id: 'acc-necklace-gold', name: 'সোনার হার', nameEn: 'Gold Necklace', type: 'necklace-gold' },
+        { id: 'acc-necklace-pearl', name: 'মুক্তার হার', nameEn: 'Pearl Necklace', type: 'necklace-pearl' },
+        { id: 'acc-bangles', name: 'চুড়ি', nameEn: 'Bangles', type: 'bangles' },
+        { id: 'acc-flower', name: 'ফুল', nameEn: 'Flower', type: 'flower' },
+    ],
+    background: [
+        { id: 'bg-cream', name: 'ক্রিম', nameEn: 'Cream', color: '#fdf6ee' },
+        { id: 'bg-pink', name: 'গোলাপি', nameEn: 'Pink', color: '#fde8ee' },
+        { id: 'bg-green', name: 'সবুজ', nameEn: 'Green', color: '#e4f5e8' },
+        { id: 'bg-blue', name: 'নীল', nameEn: 'Blue', color: '#e0f0f5' },
+        { id: 'bg-gold', name: 'স্বর্ণ', nameEn: 'Gold', color: '#fdf0d0' },
+        { id: 'bg-purple', name: 'বেগুনি', nameEn: 'Purple', color: '#f0e0f5' },
+    ]
+};
+
+// Current selection state
+let currentOutfit = {
+    sari: 'sari-red',
+    salwar: null,
+    hair: 'hair-bun',
+    accessory: 'acc-none',
+    background: 'bg-cream',
+    outfitType: 'sari' // 'sari' or 'salwar'
+};
+
+let currentCategory = 'sari';
+const canvas = document.getElementById('characterCanvas');
+const ctx = canvas.getContext('2d');
+
+// ============================================
+// UI Rendering
+// ============================================
+function renderCategoryTabs() {
+    const tabsEl = document.getElementById('categoryTabs');
+    tabsEl.innerHTML = '';
+    categories.forEach(cat => {
+        const tab = document.createElement('button');
+        tab.className = `cat-tab ${currentCategory === cat.id ? 'active' : ''}`;
+        tab.innerHTML = `<i class="fas ${cat.icon}"></i> ${cat.name}`;
+        tab.setAttribute('aria-label', cat.nameEn);
+        tab.onclick = () => {
+            currentCategory = cat.id;
+            renderCategoryTabs();
+            renderItems();
+        };
+        tabsEl.appendChild(tab);
+    });
+}
+
+function renderItems() {
+    const gridEl = document.getElementById('itemsGrid');
+    gridEl.innerHTML = '';
+    const catItems = items[currentCategory] || [];
+    catItems.forEach(item => {
+        const card = document.createElement('div');
+        const isSelected = currentOutfit[currentCategory] === item.id;
+        card.className = `item-card ${isSelected ? 'selected' : ''}`;
+        
+        // Create mini preview canvas
+        const previewCanvas = document.createElement('canvas');
+        previewCanvas.width = 140;
+        previewCanvas.height = 140;
+        previewCanvas.className = 'item-preview';
+        drawItemPreview(previewCanvas, currentCategory, item);
+        
+        const nameEl = document.createElement('div');
+        nameEl.className = 'item-name';
+        nameEl.textContent = item.name;
+        
+        card.appendChild(previewCanvas);
+        card.appendChild(nameEl);
+        card.onclick = () => selectItem(currentCategory, item.id);
+        gridEl.appendChild(card);
+    });
+}
+
+function selectItem(category, itemId) {
+    if (category === 'sari') {
+        currentOutfit.sari = itemId;
+        currentOutfit.salwar = null;
+        currentOutfit.outfitType = 'sari';
+    } else if (category === 'salwar') {
+        currentOutfit.salwar = itemId;
+        currentOutfit.sari = null;
+        currentOutfit.outfitType = 'salwar';
+    } else {
+        currentOutfit[category] = itemId;
+    }
+    
+    // Update outfit name display
+    updateOutfitName();
+    renderItems();
+    drawCharacter();
+    createSparkles();
+    playClickSound();
+}
+
+function updateOutfitName() {
+    const nameEl = document.getElementById('outfitName');
+    if (currentOutfit.outfitType === 'sari') {
+        const item = items.sari.find(i => i.id === currentOutfit.sari);
+        nameEl.textContent = item ? item.name : '';
+    } else {
+        const item = items.salwar.find(i => i.id === currentOutfit.salwar);
+        nameEl.textContent = item ? item.name : '';
+    }
+}
+
+function randomOutfit() {
+    // Random outfit type
+    const outfitType = Math.random() > 0.5 ? 'sari' : 'salwar';
+    currentOutfit.outfitType = outfitType;
+    
+    if (outfitType === 'sari') {
+        currentOutfit.sari = items.sari[Math.floor(Math.random() * items.sari.length)].id;
+        currentOutfit.salwar = null;
+    } else {
+        currentOutfit.salwar = items.salwar[Math.floor(Math.random() * items.salwar.length)].id;
+        currentOutfit.sari = null;
+    }
+    
+    currentOutfit.hair = items.hair[Math.floor(Math.random() * items.hair.length)].id;
+    currentOutfit.accessory = items.accessory[Math.floor(Math.random() * items.accessory.length)].id;
+    currentOutfit.background = items.background[Math.floor(Math.random() * items.background.length)].id;
+    
+    updateOutfitName();
+    renderItems();
+    drawCharacter();
+    showToast('এলোমেলো পোশাক!');
+}
+
+function resetOutfit() {
+    currentOutfit = {
+        sari: 'sari-red',
+        salwar: null,
+        hair: 'hair-bun',
+        accessory: 'acc-none',
+        background: 'bg-cream',
+        outfitType: 'sari'
+    };
+    updateOutfitName();
+    renderItems();
+    drawCharacter();
+    showToast('রিসেট হয়েছে!');
+}
+
+function takeScreenshot() {
+    const link = document.createElement('a');
+    link.download = 'bangladeshi-fashion.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast('ছবি সংরক্ষিত হয়েছে!');
+}
+
+// ============================================
+// Drawing Functions
+// ============================================
+function drawCharacter() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    
+    // Background
+    const bgItem = items.background.find(i => i.id === currentOutfit.background);
+    if (bgItem) {
+        ctx.fillStyle = bgItem.color;
+        ctx.fillRect(0, 0, w, h);
+        
+        // Subtle decorative pattern on background
+        ctx.globalAlpha = 0.05;
+        for (let y = 0; y < h; y += 40) {
+            for (let x = 0; x < w; x += 40) {
+                ctx.beginPath();
+                ctx.arc(x + 20, y + 20, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#000000';
+                ctx.fill();
+            }
+        }
+        ctx.globalAlpha = 1;
+    }
+    
+    const cx = w / 2; // Center X
+    const scale = w / 320; // Scale factor
+    
+    // Draw order: back hair, body, outfit, front hair, face, accessories
+    drawBackHair(cx, scale);
+    drawBody(cx, scale);
+    
+    if (currentOutfit.outfitType === 'sari') {
+        drawSari(cx, scale);
+    } else {
+        drawSalwarKameez(cx, scale);
+    }
+    
+    drawFrontHair(cx, scale);
+    drawFace(cx, scale);
+    drawAccessories(cx, scale);
+}
+
+function drawBody(cx, s) {
+    // Neck
+    ctx.fillStyle = '#d4a574';
+    ctx.beginPath();
+    ctx.ellipse(cx, 195 * s, 22 * s, 28 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Shoulders/upper body (skin)
+    ctx.fillStyle = '#d4a574';
+    ctx.beginPath();
+    ctx.moveTo(cx - 70 * s, 230 * s);
+    ctx.quadraticCurveTo(cx - 80 * s, 220 * s, cx - 60 * s, 210 * s);
+    ctx.lineTo(cx - 22 * s, 200 * s);
+    ctx.lineTo(cx + 22 * s, 200 * s);
+    ctx.lineTo(cx + 60 * s, 210 * s);
+    ctx.quadraticCurveTo(cx + 80 * s, 220 * s, cx + 70 * s, 230 * s);
+    ctx.fill();
+    
+    // Arms
+    ctx.fillStyle = '#d4a574';
+    // Left arm
+    ctx.beginPath();
+    ctx.moveTo(cx - 70 * s, 230 * s);
+    ctx.quadraticCurveTo(cx - 85 * s, 340 * s, cx - 65 * s, 440 * s);
+    ctx.lineTo(cx - 50 * s, 440 * s);
+    ctx.quadraticCurveTo(cx - 68 * s, 340 * s, cx - 55 * s, 235 * s);
+    ctx.fill();
+    
+    // Right arm
+    ctx.beginPath();
+    ctx.moveTo(cx + 70 * s, 230 * s);
+    ctx.quadraticCurveTo(cx + 85 * s, 340 * s, cx + 65 * s, 440 * s);
+    ctx.lineTo(cx + 50 * s, 440 * s);
+    ctx.quadraticCurveTo(cx + 68 * s, 340 * s, cx + 55 * s, 235 * s);
+    ctx.fill();
+    
+    // Hands
+    ctx.beginPath();
+    ctx.ellipse(cx - 57 * s, 448 * s, 14 * s, 12 * s, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 57 * s, 448 * s, 14 * s, 12 * s, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Legs (skin)
+    ctx.fillStyle = '#d4a574';
+    // Left leg
+    ctx.beginPath();
+    ctx.moveTo(cx - 40 * s, 570 * s);
+    ctx.quadraticCurveTo(cx - 45 * s, 700 * s, cx - 38 * s, 820 * s);
+    ctx.lineTo(cx - 10 * s, 820 * s);
+    ctx.quadraticCurveTo(cx - 15 * s, 700 * s, cx - 15 * s, 570 * s);
+    ctx.fill();
+    // Right leg
+    ctx.beginPath();
+    ctx.moveTo(cx + 40 * s, 570 * s);
+    ctx.quadraticCurveTo(cx + 45 * s, 700 * s, cx + 38 * s, 820 * s);
+    ctx.lineTo(cx + 10 * s, 820 * s);
+    ctx.quadraticCurveTo(cx + 15 * s, 700 * s, cx + 15 * s, 570 * s);
+    ctx.fill();
+    
+    // Feet
+    ctx.beginPath();
+    ctx.ellipse(cx - 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawSari(cx, s) {
+    const sariItem = items.sari.find(i => i.id === currentOutfit.sari);
+    if (!sariItem) return;
+    const c = sariItem.colors;
+    
+    // Blouse
+    ctx.fillStyle = c.blouse;
+    ctx.beginPath();
+    ctx.moveTo(cx - 55 * s, 225 * s);
+    ctx.quadraticCurveTo(cx - 60 * s, 210 * s, cx - 45 * s, 205 * s);
+    ctx.lineTo(cx + 45 * s, 205 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 210 * s, cx + 55 * s, 225 * s);
+    ctx.quadraticCurveTo(cx + 50 * s, 290 * s, cx + 45 * s, 310 * s);
+    ctx.lineTo(cx - 45 * s, 310 * s);
+    ctx.quadraticCurveTo(cx - 50 * s, 290 * s, cx - 55 * s, 225 * s);
+    ctx.fill();
+    
+    // Blouse neckline
+    ctx.strokeStyle = c.border;
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 25 * s, 205 * s);
+    ctx.quadraticCurveTo(cx, 220 * s, cx + 25 * s, 205 * s);
+    ctx.stroke();
+    
+    // Sari main drape (lower part - skirt)
+    ctx.fillStyle = c.body;
+    ctx.beginPath();
+    ctx.moveTo(cx - 60 * s, 310 * s);
+    ctx.lineTo(cx + 60 * s, 310 * s);
+    ctx.quadraticCurveTo(cx + 80 * s, 500 * s, cx + 70 * s, 820 * s);
+    ctx.lineTo(cx - 70 * s, 820 * s);
+    ctx.quadraticCurveTo(cx - 80 * s, 500 * s, cx - 60 * s, 310 * s);
+    ctx.fill();
+    
+    // Sari pleats
+    ctx.strokeStyle = c.pallu;
+    ctx.lineWidth = 1 * s;
+    ctx.globalAlpha = 0.3;
+    for (let i = -3; i <= 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(cx + i * 12 * s, 400 * s);
+        ctx.quadraticCurveTo(cx + i * 10 * s, 600 * s, cx + i * 8 * s, 820 * s);
+        ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    
+    // Sari border at bottom
+    ctx.fillStyle = c.border;
+    ctx.beginPath();
+    ctx.moveTo(cx - 72 * s, 800 * s);
+    ctx.lineTo(cx + 72 * s, 800 * s);
+    ctx.lineTo(cx + 70 * s, 820 * s);
+    ctx.lineTo(cx - 70 * s, 820 * s);
+    ctx.fill();
+    
+    // Border pattern on bottom
+    ctx.fillStyle = c.body;
+    for (let x = -65; x <= 65; x += 12) {
+        ctx.beginPath();
+        ctx.arc(cx + x * s, 810 * s, 3 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Sari pallu (drape over shoulder)
+    ctx.fillStyle = c.pallu;
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(cx + 25 * s, 205 * s);
+    ctx.quadraticCurveTo(cx + 55 * s, 200 * s, cx + 70 * s, 230 * s);
+    ctx.quadraticCurveTo(cx + 90 * s, 320 * s, cx + 75 * s, 440 * s);
+    ctx.lineTo(cx + 50 * s, 440 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 350 * s, cx + 55 * s, 310 * s);
+    ctx.lineTo(cx + 45 * s, 310 * s);
+    ctx.quadraticCurveTo(cx + 40 * s, 280 * s, cx + 20 * s, 260 * s);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    
+    // Pallu border
+    ctx.strokeStyle = c.border;
+    ctx.lineWidth = 3 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx + 25 * s, 205 * s);
+    ctx.quadraticCurveTo(cx + 55 * s, 200 * s, cx + 70 * s, 230 * s);
+    ctx.quadraticCurveTo(cx + 90 * s, 320 * s, cx + 75 * s, 440 * s);
+    ctx.stroke();
+    
+    // Pallu decorative dots
+    ctx.fillStyle = c.border;
+    for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 2; x++) {
+            const px = cx + (55 + x * 10) * s;
+            const py = (240 + y * 25) * s;
+            ctx.beginPath();
+            ctx.arc(px, py, 3 * s, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    
+    // Left arm sari drape
+    ctx.fillStyle = c.body;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(cx - 55 * s, 230 * s);
+    ctx.quadraticCurveTo(cx - 80 * s, 330 * s, cx - 68 * s, 435 * s);
+    ctx.lineTo(cx - 50 * s, 435 * s);
+    ctx.quadraticCurveTo(cx - 65 * s, 330 * s, cx - 45 * s, 235 * s);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    
+    // Sari waist border
+    ctx.fillStyle = c.border;
+    ctx.beginPath();
+    ctx.moveTo(cx - 62 * s, 308 * s);
+    ctx.lineTo(cx + 62 * s, 308 * s);
+    ctx.lineTo(cx + 60 * s, 322 * s);
+    ctx.lineTo(cx - 60 * s, 322 * s);
+    ctx.fill();
+    
+    // Feet/shoes visible
+    ctx.fillStyle = c.blouse;
+    ctx.beginPath();
+    ctx.ellipse(cx - 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawSalwarKameez(cx, s) {
+    const salwarItem = items.salwar.find(i => i.id === currentOutfit.salwar);
+    if (!salwarItem) return;
+    const c = salwarItem.colors;
+    
+    // Kameez (long tunic top)
+    ctx.fillStyle = c.kameez;
+    ctx.beginPath();
+    ctx.moveTo(cx - 55 * s, 220 * s);
+    ctx.quadraticCurveTo(cx - 60 * s, 210 * s, cx - 45 * s, 205 * s);
+    ctx.lineTo(cx + 45 * s, 205 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 210 * s, cx + 55 * s, 220 * s);
+    ctx.quadraticCurveTo(cx + 65 * s, 400 * s, cx + 55 * s, 560 * s);
+    ctx.lineTo(cx - 55 * s, 560 * s);
+    ctx.quadraticCurveTo(cx - 65 * s, 400 * s, cx - 55 * s, 220 * s);
+    ctx.fill();
+    
+    // Kameez neckline
+    ctx.fillStyle = '#d4a574';
+    ctx.beginPath();
+    ctx.moveTo(cx - 20 * s, 205 * s);
+    ctx.quadraticCurveTo(cx, 230 * s, cx + 20 * s, 205 * s);
+    ctx.fill();
+    
+    // Neckline embroidery
+    ctx.strokeStyle = c.trim;
+    ctx.lineWidth = 2.5 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 22 * s, 205 * s);
+    ctx.quadraticCurveTo(cx, 235 * s, cx + 22 * s, 205 * s);
+    ctx.stroke();
+    
+    // Kameez sleeve borders
+    ctx.strokeStyle = c.trim;
+    ctx.lineWidth = 3 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 70 * s, 310 * s);
+    ctx.lineTo(cx - 45 * s, 310 * s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 70 * s, 310 * s);
+    ctx.lineTo(cx + 45 * s, 310 * s);
+    ctx.stroke();
+    
+    // Kameez bottom border
+    ctx.fillStyle = c.trim;
+    ctx.beginPath();
+    ctx.moveTo(cx - 56 * s, 550 * s);
+    ctx.lineTo(cx + 56 * s, 550 * s);
+    ctx.lineTo(cx + 55 * s, 562 * s);
+    ctx.lineTo(cx - 55 * s, 562 * s);
+    ctx.fill();
+    
+    // Kameez center design
+    ctx.strokeStyle = c.trim;
+    ctx.lineWidth = 1.5 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx, 240 * s);
+    ctx.lineTo(cx, 540 * s);
+    ctx.stroke();
+    
+    // Small decorative motifs on kameez
+    ctx.fillStyle = c.trim;
+    for (let y = 0; y < 5; y++) {
+        for (let x = -1; x <= 1; x++) {
+            ctx.beginPath();
+            ctx.arc(cx + x * 20 * s, (270 + y * 55) * s, 2.5 * s, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    
+    // Salwar (pants)
+    ctx.fillStyle = c.salwar;
+    // Left leg
+    ctx.beginPath();
+    ctx.moveTo(cx - 50 * s, 555 * s);
+    ctx.quadraticCurveTo(cx - 55 * s, 680 * s, cx - 50 * s, 810 * s);
+    ctx.lineTo(cx - 5 * s, 810 * s);
+    ctx.quadraticCurveTo(cx - 10 * s, 680 * s, cx - 10 * s, 555 * s);
+    ctx.fill();
+    // Right leg
+    ctx.beginPath();
+    ctx.moveTo(cx + 50 * s, 555 * s);
+    ctx.quadraticCurveTo(cx + 55 * s, 680 * s, cx + 50 * s, 810 * s);
+    ctx.lineTo(cx + 5 * s, 810 * s);
+    ctx.quadraticCurveTo(cx + 10 * s, 680 * s, cx + 10 * s, 555 * s);
+    ctx.fill();
+    
+    // Salwar cuffs
+    ctx.fillStyle = c.trim;
+    ctx.beginPath();
+    ctx.ellipse(cx - 28 * s, 812 * s, 24 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 28 * s, 812 * s, 24 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Sleeves
+    ctx.fillStyle = c.kameez;
+    // Left sleeve
+    ctx.beginPath();
+    ctx.moveTo(cx - 55 * s, 225 * s);
+    ctx.quadraticCurveTo(cx - 82 * s, 260 * s, cx - 75 * s, 310 * s);
+    ctx.lineTo(cx - 45 * s, 310 * s);
+    ctx.quadraticCurveTo(cx - 50 * s, 270 * s, cx - 45 * s, 230 * s);
+    ctx.fill();
+    // Right sleeve
+    ctx.beginPath();
+    ctx.moveTo(cx + 55 * s, 225 * s);
+    ctx.quadraticCurveTo(cx + 82 * s, 260 * s, cx + 75 * s, 310 * s);
+    ctx.lineTo(cx + 45 * s, 310 * s);
+    ctx.quadraticCurveTo(cx + 50 * s, 270 * s, cx + 45 * s, 230 * s);
+    ctx.fill();
+    
+    // Dupatta (scarf draped across)
+    ctx.fillStyle = c.dupatta;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(cx + 20 * s, 210 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 205 * s, cx + 70 * s, 250 * s);
+    ctx.quadraticCurveTo(cx + 85 * s, 350 * s, cx + 55 * s, 460 * s);
+    ctx.lineTo(cx + 35 * s, 450 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 350 * s, cx + 50 * s, 260 * s);
+    ctx.quadraticCurveTo(cx + 30 * s, 230 * s, cx + 10 * s, 230 * s);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    
+    // Dupatta border
+    ctx.strokeStyle = c.trim;
+    ctx.lineWidth = 2 * s;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(cx + 20 * s, 210 * s);
+    ctx.quadraticCurveTo(cx + 60 * s, 205 * s, cx + 70 * s, 250 * s);
+    ctx.quadraticCurveTo(cx + 85 * s, 350 * s, cx + 55 * s, 460 * s);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    
+    // Shoes
+    ctx.fillStyle = c.salwar;
+    ctx.beginPath();
+    ctx.ellipse(cx - 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 24 * s, 828 * s, 22 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawBackHair(cx, s) {
+    const hairItem = items.hair.find(i => i.id === currentOutfit.hair);
+    if (!hairItem) return;
+    const style = hairItem.style;
+    
+    ctx.fillStyle = '#1a1a1a';
+    
+    if (style === 'long') {
+        ctx.beginPath();
+        ctx.moveTo(cx - 68 * s, 130 * s);
+        ctx.quadraticCurveTo(cx - 80 * s, 300 * s, cx - 60 * s, 480 * s);
+        ctx.lineTo(cx - 40 * s, 480 * s);
+        ctx.quadraticCurveTo(cx - 55 * s, 300 * s, cx - 50 * s, 140 * s);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx + 68 * s, 130 * s);
+        ctx.quadraticCurveTo(cx + 80 * s, 300 * s, cx + 60 * s, 480 * s);
+        ctx.lineTo(cx + 40 * s, 480 * s);
+        ctx.quadraticCurveTo(cx + 55 * s, 300 * s, cx + 50 * s, 140 * s);
+        ctx.fill();
+    } else if (style === 'medium') {
+        ctx.beginPath();
+        ctx.moveTo(cx - 65 * s, 130 * s);
+        ctx.quadraticCurveTo(cx - 75 * s, 250 * s, cx - 55 * s, 360 * s);
+        ctx.lineTo(cx - 40 * s, 350 * s);
+        ctx.quadraticCurveTo(cx - 52 * s, 250 * s, cx - 48 * s, 140 * s);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx + 65 * s, 130 * s);
+        ctx.quadraticCurveTo(cx + 75 * s, 250 * s, cx + 55 * s, 360 * s);
+        ctx.lineTo(cx + 40 * s, 350 * s);
+        ctx.quadraticCurveTo(cx + 52 * s, 250 * s, cx + 48 * s, 140 * s);
+        ctx.fill();
+    }
+}
+
+function drawFrontHair(cx, s) {
+    const hairItem = items.hair.find(i => i.id === currentOutfit.hair);
+    if (!hairItem) return;
+    const style = hairItem.style;
+    
+    ctx.fillStyle = '#1a1a1a';
+    
+    // Hair on top of head (all styles)
+    ctx.beginPath();
+    ctx.ellipse(cx, 115 * s, 68 * s, 50 * s, 0, Math.PI, 0);
+    ctx.fill();
+    
+    // Bangs/fringe
+    ctx.beginPath();
+    ctx.moveTo(cx - 60 * s, 125 * s);
+    ctx.quadraticCurveTo(cx - 40 * s, 155 * s, cx - 15 * s, 140 * s);
+    ctx.quadraticCurveTo(cx, 160 * s, cx + 15 * s, 140 * s);
+    ctx.quadraticCurveTo(cx + 40 * s, 155 * s, cx + 60 * s, 125 * s);
+    ctx.lineTo(cx + 65 * s, 115 * s);
+    ctx.quadraticCurveTo(cx, 95 * s, cx - 65 * s, 115 * s);
+    ctx.fill();
+    
+    // Side hair strands
+    ctx.beginPath();
+    ctx.moveTo(cx - 62 * s, 120 * s);
+    ctx.quadraticCurveTo(cx - 72 * s, 160 * s, cx - 60 * s, 200 * s);
+    ctx.lineTo(cx - 52 * s, 195 * s);
+    ctx.quadraticCurveTo(cx - 62 * s, 155 * s, cx - 55 * s, 125 * s);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(cx + 62 * s, 120 * s);
+    ctx.quadraticCurveTo(cx + 72 * s, 160 * s, cx + 60 * s, 200 * s);
+    ctx.lineTo(cx + 52 * s, 195 * s);
+    ctx.quadraticCurveTo(cx + 62 * s, 155 * s, cx + 55 * s, 125 * s);
+    ctx.fill();
+    
+    // Bun
+    if (style === 'bun') {
+        ctx.beginPath();
+        ctx.ellipse(cx, 72 * s, 28 * s, 24 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Bun decoration
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(cx, 72 * s, 8 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Hair shine
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 15 * s, 105 * s, 20 * s, 8 * s, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawFace(cx, s) {
+    // Face shape
+    ctx.fillStyle = '#d4a574';
+    ctx.beginPath();
+    ctx.ellipse(cx, 150 * s, 52 * s, 62 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Face shading
+    ctx.fillStyle = 'rgba(180,130,90,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(cx + 20 * s, 165 * s, 35 * s, 45 * s, 0.1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyes - white
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.ellipse(cx - 18 * s, 148 * s, 12 * s, 8 * s, -0.05, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 18 * s, 148 * s, 12 * s, 8 * s, 0.05, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyes - iris
+    ctx.fillStyle = '#3d2b1f';
+    ctx.beginPath();
+    ctx.ellipse(cx - 17 * s, 148 * s, 7 * s, 7 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 19 * s, 148 * s, 7 * s, 7 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyes - pupil
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(cx - 16 * s, 148 * s, 3.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 20 * s, 148 * s, 3.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eye highlight
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx - 14 * s, 146 * s, 1.8 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 22 * s, 146 * s, 1.8 * s, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyelashes / eyeliner
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 30 * s, 146 * s);
+    ctx.quadraticCurveTo(cx - 18 * s, 137 * s, cx - 6 * s, 146 * s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 6 * s, 146 * s);
+    ctx.quadraticCurveTo(cx + 18 * s, 137 * s, cx + 30 * s, 146 * s);
+    ctx.stroke();
+    
+    // Eyebrows
+    ctx.strokeStyle = '#2d1810';
+    ctx.lineWidth = 2.5 * s;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 30 * s, 133 * s);
+    ctx.quadraticCurveTo(cx - 18 * s, 126 * s, cx - 6 * s, 132 * s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 6 * s, 132 * s);
+    ctx.quadraticCurveTo(cx + 18 * s, 126 * s, cx + 30 * s, 133 * s);
+    ctx.stroke();
+    
+    // Nose
+    ctx.strokeStyle = 'rgba(120,80,50,0.4)';
+    ctx.lineWidth = 1.5 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx, 148 * s);
+    ctx.quadraticCurveTo(cx - 5 * s, 170 * s, cx, 174 * s);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(180,130,90,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 4 * s, 174 * s, 4 * s, 2.5 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 4 * s, 174 * s, 4 * s, 2.5 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Smile
+    ctx.strokeStyle = 'rgba(140,70,50,0.6)';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 15 * s, 185 * s);
+    ctx.quadraticCurveTo(cx, 198 * s, cx + 15 * s, 185 * s);
+    ctx.stroke();
+    
+    // Lips color
+    ctx.fillStyle = 'rgba(180,70,70,0.35)';
+    ctx.beginPath();
+    ctx.moveTo(cx - 12 * s, 186 * s);
+    ctx.quadraticCurveTo(cx, 196 * s, cx + 12 * s, 186 * s);
+    ctx.quadraticCurveTo(cx, 192 * s, cx - 12 * s, 186 * s);
+    ctx.fill();
+    
+    // Bindi (decorative dot on forehead)
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath();
+    ctx.arc(cx, 130 * s, 3.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Cheek blush
+    ctx.fillStyle = 'rgba(200,100,100,0.12)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 35 * s, 168 * s, 12 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 35 * s, 168 * s, 12 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawAccessories(cx, s) {
+    const accItem = items.accessory.find(i => i.id === currentOutfit.accessory);
+    if (!accItem || accItem.type === 'none') return;
+    const type = accItem.type;
+    
+    if (type === 'tikka') {
+        // Maang tikka on forehead
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(cx, 118 * s, 5 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#c0392b';
+        ctx.beginPath();
+        ctx.arc(cx, 118 * s, 3 * s, 0, Math.PI * 2);
+        ctx.fill();
+        // Chain
+        ctx.strokeStyle = '#d4a017';
+        ctx.lineWidth = 1 * s;
+        ctx.beginPath();
+        ctx.moveTo(cx, 118 * s);
+        ctx.lineTo(cx, 95 * s);
+        ctx.stroke();
+    }
+    
+    if (type === 'earrings-gold') {
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(cx - 55 * s, 158 * s, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + 55 * s, 158 * s, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+        // Dangling part
+        ctx.beginPath();
+        ctx.arc(cx - 55 * s, 168 * s, 4 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + 55 * s, 168 * s, 4 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    if (type === 'earrings-red') {
+        ctx.fillStyle = '#c0392b';
+        ctx.beginPath();
+        ctx.arc(cx - 55 * s, 158 * s, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + 55 * s, 158 * s, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(cx - 55 * s, 168 * s, 4 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + 55 * s, 168 * s, 4 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    if (type === 'necklace-gold') {
+        ctx.strokeStyle = '#d4a017';
+        ctx.lineWidth = 3 * s;
+        ctx.beginPath();
+        ctx.moveTo(cx - 35 * s, 200 * s);
+        ctx.quadraticCurveTo(cx, 230 * s, cx + 35 * s, 200 * s);
+        ctx.stroke();
+        // Pendant
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(cx, 225 * s, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#c0392b';
+        ctx.beginPath();
+        ctx.arc(cx, 225 * s, 3 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    if (type === 'necklace-pearl') {
+        ctx.fillStyle = '#f5f0e8';
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI;
+            const px = cx + Math.cos(angle + Math.PI) * 38 * s;
+            const py = 200 * s + Math.sin(angle) * 25 * s;
+            ctx.beginPath();
+            ctx.arc(px, py, 3.5 * s, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(180,170,150,0.5)';
+            ctx.lineWidth = 0.5 * s;
+            ctx.stroke();
+        }
+    }
+    
+    if (type === 'bangles') {
+        // Left hand bangles
+        ctx.strokeStyle = '#d4a017';
+        ctx.lineWidth = 2.5 * s;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.ellipse(cx - 57 * s, (420 + i * 8) * s, 16 * s, 5 * s, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        // Red bangles
+        ctx.strokeStyle = '#c0392b';
+        ctx.lineWidth = 2 * s;
+        for (let i = 0; i < 2; i++) {
+            ctx.beginPath();
+            ctx.ellipse(cx - 57 * s, (424 + i * 8) * s, 16 * s, 5 * s, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        // Right hand bangles
+        ctx.strokeStyle = '#d4a017';
+        ctx.lineWidth = 2.5 * s;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.ellipse(cx + 57 * s, (420 + i * 8) * s, 16 * s, 5 * s, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.strokeStyle = '#c0392b';
+        ctx.lineWidth = 2 * s;
+        for (let i = 0; i < 2; i++) {
+            ctx.beginPath();
+            ctx.ellipse(cx + 57 * s, (424 + i * 8) * s, 16 * s, 5 * s, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+    
+    if (type === 'flower') {
+        // Flower in hair
+        const fx = cx + 40 * s;
+        const fy = 110 * s;
+        ctx.fillStyle = '#ffffff';
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.ellipse(
+                fx + Math.cos(angle) * 8 * s,
+                fy + Math.sin(angle) * 8 * s,
+                6 * s, 4 * s,
+                angle, 0, Math.PI * 2
+            );
+            ctx.fill();
+        }
+        ctx.fillStyle = '#d4a017';
+        ctx.beginPath();
+        ctx.arc(fx, fy, 4 * s, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// ============================================
+// Item Preview Drawing (mini thumbnails)
+// ============================================
+function drawItemPreview(previewCanvas, category, item) {
+    const pCtx = previewCanvas.getContext('2d');
+    const pw = previewCanvas.width;
+    const ph = previewCanvas.height;
+    
+    pCtx.clearRect(0, 0, pw, ph);
+    
+    // Background
+    pCtx.fillStyle = '#faf5ee';
+    pCtx.beginPath();
+    pCtx.roundRect(0, 0, pw, ph, 8);
+    pCtx.fill();
+    
+    const pcx = pw / 2;
+    const pcy = ph / 2;
+    
+    if (category === 'sari') {
+        // Draw mini sari preview
+        const c = item.colors;
+        // Skirt part
+        pCtx.fillStyle = c.body;
+        pCtx.beginPath();
+        pCtx.moveTo(pcx - 30, pcy - 10);
+        pCtx.lineTo(pcx + 30, pcy - 10);
+        pCtx.lineTo(pcx + 25, pcy + 40);
+        pCtx.lineTo(pcx - 25, pcy + 40);
+        pCtx.fill();
+        // Border
+        pCtx.fillStyle = c.border;
+        pCtx.fillRect(pcx - 26, pcy + 35, 52, 5);
+        // Blouse
+        pCtx.fillStyle = c.blouse;
+        pCtx.fillRect(pcx - 15, pcy - 30, 30, 22);
+        // Pallu
+        pCtx.fillStyle = c.pallu;
+        pCtx.globalAlpha = 0.7;
+        pCtx.beginPath();
+        pCtx.moveTo(pcx + 10, pcy - 30);
+        pCtx.quadraticCurveTo(pcx + 30, pcy - 15, pcx + 25, pcy + 20);
+        pCtx.lineTo(pcx + 15, pcy + 15);
+        pCtx.quadraticCurveTo(pcx + 18, pcy - 10, pcx + 5, pcy - 15);
+        pCtx.fill();
+        pCtx.globalAlpha = 1;
+    } else if (category === 'salwar') {
+        const c = item.colors;
+        // Kameez
+        pCtx.fillStyle = c.kameez;
+        pCtx.beginPath();
+        pCtx.moveTo(pcx - 20, pcy - 30);
+        pCtx.lineTo(pcx + 20, pcy - 30);
+        pCtx.lineTo(pcx + 22, pcy + 10);
+        pCtx.lineTo(pcx - 22, pcy + 10);
+        pCtx.fill();
+        // Salwar
+        pCtx.fillStyle = c.salwar;
+        pCtx.beginPath();
+        pCtx.moveTo(pcx - 22, pcy + 10);
+        pCtx.lineTo(pcx - 5, pcy + 10);
+        pCtx.lineTo(pcx - 8, pcy + 40);
+        pCtx.lineTo(pcx - 25, pcy + 40);
+        pCtx.fill();
+        pCtx.beginPath();
+        pCtx.moveTo(pcx + 22, pcy + 10);
+        pCtx.lineTo(pcx + 5, pcy + 10);
+        pCtx.lineTo(pcx + 8, pcy + 40);
+        pCtx.lineTo(pcx + 25, pcy + 40);
+        pCtx.fill();
+        // Dupatta
+        pCtx.fillStyle = c.dupatta;
+        pCtx.globalAlpha = 0.5;
+        pCtx.beginPath();
+        pCtx.moveTo(pcx + 8, pcy - 28);
+        pCtx.quadraticCurveTo(pcx + 28, pcy - 15, pcx + 20, pcy + 15);
+        pCtx.lineTo(pcx + 12, pcy + 10);
+        pCtx.quadraticCurveTo(pcx + 18, pcy - 10, pcx + 3, pcy - 15);
+        pCtx.fill();
+        pCtx.globalAlpha = 1;
+        // Trim
+        pCtx.fillStyle = c.trim;
+        pCtx.fillRect(pcx - 22, pcy + 6, 44, 4);
+    } else if (category === 'hair') {
+        pCtx.fillStyle = '#1a1a1a';
+        // Head outline
+        pCtx.beginPath();
+        pCtx.ellipse(pcx, pcy - 5, 22, 26, 0, 0, Math.PI * 2);
+        pCtx.fill();
+        
+        if (item.style === 'short') {
+            pCtx.beginPath();
+            pCtx.ellipse(pcx, pcy - 15, 25, 18, 0, Math.PI, 0);
+            pCtx.fill();
+        } else if (item.style === 'medium') {
+            pCtx.beginPath();
+            pCtx.ellipse(pcx, pcy - 15, 25, 18, 0, Math.PI, 0);
+            pCtx.fill();
+            pCtx.fillRect(pcx - 27, pcy - 5, 8, 35);
+            pCtx.fillRect(pcx + 19, pcy - 5, 8, 35);
+        } else if (item.style === 'long') {
+            pCtx.beginPath();
+            pCtx.ellipse(pcx, pcy - 15, 25, 18, 0, Math.PI, 0);
+            pCtx.fill();
+            pCtx.fillRect(pcx - 28, pcy - 5, 9, 50);
+            pCtx.fillRect(pcx + 19, pcy - 5, 9, 50);
+        } else if (item.style === 'bun') {
+            pCtx.beginPath();
+            pCtx.ellipse(pcx, pcy - 15, 25, 18, 0, Math.PI, 0);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy - 32, 10, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy - 32, 3, 0, Math.PI * 2);
+            pCtx.fill();
+        }
+    } else if (category === 'accessory') {
+        if (item.type === 'tikka') {
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy, 8, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.fillStyle = '#c0392b';
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy, 5, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.strokeStyle = '#d4a017';
+            pCtx.lineWidth = 1.5;
+            pCtx.beginPath();
+            pCtx.moveTo(pcx, pcy - 8);
+            pCtx.lineTo(pcx, pcy - 25);
+            pCtx.stroke();
+        } else if (item.type === 'earrings-gold') {
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx - 15, pcy - 5, 8, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx + 15, pcy - 5, 8, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx - 15, pcy + 8, 5, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx + 15, pcy + 8, 5, 0, Math.PI * 2);
+            pCtx.fill();
+        } else if (item.type === 'earrings-red') {
+            pCtx.fillStyle = '#c0392b';
+            pCtx.beginPath();
+            pCtx.arc(pcx - 15, pcy - 5, 8, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx + 15, pcy - 5, 8, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx - 15, pcy + 8, 5, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.beginPath();
+            pCtx.arc(pcx + 15, pcy + 8, 5, 0, Math.PI * 2);
+            pCtx.fill();
+        } else if (item.type === 'necklace-gold') {
+            pCtx.strokeStyle = '#d4a017';
+            pCtx.lineWidth = 3;
+            pCtx.beginPath();
+            pCtx.moveTo(pcx - 25, pcy - 10);
+            pCtx.quadraticCurveTo(pcx, pcy + 15, pcx + 25, pcy - 10);
+            pCtx.stroke();
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy + 10, 6, 0, Math.PI * 2);
+            pCtx.fill();
+        } else if (item.type === 'necklace-pearl') {
+            pCtx.fillStyle = '#f5f0e8';
+            for (let i = 0; i < 10; i++) {
+                const angle = (i / 10) * Math.PI;
+                const px = pcx + Math.cos(angle + Math.PI) * 28;
+                const py = pcy - 10 + Math.sin(angle) * 22;
+                pCtx.beginPath();
+                pCtx.arc(px, py, 4, 0, Math.PI * 2);
+                pCtx.fill();
+                pCtx.strokeStyle = 'rgba(180,170,150,0.5)';
+                pCtx.lineWidth = 0.5;
+                pCtx.stroke();
+            }
+        } else if (item.type === 'bangles') {
+            pCtx.strokeStyle = '#d4a017';
+            pCtx.lineWidth = 3;
+            for (let i = 0; i < 3; i++) {
+                pCtx.beginPath();
+                pCtx.ellipse(pcx, pcy - 8 + i * 12, 25, 8, 0, 0, Math.PI * 2);
+                pCtx.stroke();
+            }
+            pCtx.strokeStyle = '#c0392b';
+            pCtx.lineWidth = 2;
+            for (let i = 0; i < 2; i++) {
+                pCtx.beginPath();
+                pCtx.ellipse(pcx, pcy - 4 + i * 12, 25, 8, 0, 0, Math.PI * 2);
+                pCtx.stroke();
+            }
+        } else if (item.type === 'flower') {
+            pCtx.fillStyle = '#ffffff';
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2;
+                pCtx.beginPath();
+                pCtx.ellipse(
+                    pcx + Math.cos(angle) * 12,
+                    pcy + Math.sin(angle) * 12,
+                    9, 6,
+                    angle, 0, Math.PI * 2
+                );
+                pCtx.fill();
+            }
+            pCtx.fillStyle = '#d4a017';
+            pCtx.beginPath();
+            pCtx.arc(pcx, pcy, 6, 0, Math.PI * 2);
+            pCtx.fill();
+        } else if (item.type === 'none') {
+            pCtx.fillStyle = '#ccc';
+            pCtx.font = '12px Poppins';
+            pCtx.textAlign = 'center';
+            pCtx.fillText('None', pcx, pcy + 4);
+        }
+    } else if (category === 'background') {
+        pCtx.fillStyle = item.color;
+        pCtx.beginPath();
+        pCtx.roundRect(10, 10, pw - 20, ph - 20, 8);
+        pCtx.fill();
+        // Pattern dots
+        pCtx.globalAlpha = 0.15;
+        pCtx.fillStyle = '#000000';
+        for (let y = 20; y < ph - 10; y += 15) {
+            for (let x = 20; x < pw - 10; x += 15) {
+                pCtx.beginPath();
+                pCtx.arc(x, y, 2, 0, Math.PI * 2);
+                pCtx.fill();
+            }
+        }
+        pCtx.globalAlpha = 1;
+    }
+}
+
+// ============================================
+// Sound & Effects
+// ============================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playClickSound() {
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.15);
+    } catch(e) {}
+}
+
+function createSparkles() {
+    const panel = document.querySelector('.character-panel');
+    const rect = panel.getBoundingClientRect();
+    for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.innerHTML = '<i class="fas fa-star" style="color: #d4a017; font-size: 12px;"></i>';
+        sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+        sparkle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+        sparkle.style.animation = `sparkleAnim 0.6s ease-out forwards`;
+        sparkle.style.animationDelay = (Math.random() * 0.2) + 's';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+    }
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============================================
+// Initialize
+// ============================================
+renderCategoryTabs();
+renderItems();
+drawCharacter();
+
+// Animate bindi subtly
+let bindiPhase = 0;
+function animateBindi() {
+    bindiPhase += 0.03;
+    requestAnimationFrame(animateBindi);
+}
+animateBindi();
+</script>
+
+</body>
+</html>
+```
+
+This is a complete Bangladeshi traditional dress-up game featuring a cartoon-style character. Here's what's included:
+
+**Character**: A cartoon-style figure drawn entirely with Canvas 2D API, featuring detailed facial features including expressive eyes with highlights, shaped eyebrows, a decorative bindi, and a warm smile — styled in a cartoon caricature fashion.
+
+**Outfit Categories**:
+- **শাড়ি (Sari)** — 8 different colored saris with proper draping, pallu, blouse, borders, and pleats
+- **সেলোয়ার কামিজ (Salwar Kameez)** — 6 sets with kameez tunic, salwar pants, dupatta scarf, and decorative trim
+- **চুল (Hair)** — 4 styles: short, medium, long, and bun with gold ornament
+- **আনুষঙ্গিক (Accessories)** — 8 options including tikka, gold/red earrings, gold/pearl necklaces, bangles, and hair flower
+- **পটভূমি (Background)** — 6 color themes with subtle pattern overlays
+
+**Interactive Features**:
+- Click any item to instantly dress the character
+- Mini canvas preview thumbnails for each item
+- Selected items show a checkmark indicator
+- Random outfit generator, reset button, and screenshot save
+- Sparkle effects on outfit change with Web Audio click sounds
+- Bengali/English bilingual labels
+- Fully responsive layout — side-by-side on desktop, stacked on mobile
